@@ -1,20 +1,20 @@
-import * as Kilt from "@kiltprotocol/sdk-js";
+import * as Kilt from '@kiltprotocol/sdk-js'
 import type {
   SignerInterface,
   DidDocument,
   MultibaseKeyPair,
-} from "@kiltprotocol/types";
+} from '@kiltprotocol/types'
 
 export async function verifyDid(
   submitterAccount: MultibaseKeyPair,
   didDocument: DidDocument,
   signers: SignerInterface[]
 ): Promise<{ didDocument: DidDocument; signers: SignerInterface[] }> {
-  const api = Kilt.ConfigService.get("api");
+  const api = Kilt.ConfigService.get('api')
 
   const assertionKeyPair = Kilt.generateKeypair({
-    type: "sr25519",
-  });
+    type: 'sr25519',
+  })
 
   const vmTransactionResult = await Kilt.DidHelpers.setVerificationMethod({
     api,
@@ -22,15 +22,15 @@ export async function verifyDid(
     signers: [...signers, assertionKeyPair],
     submitter: submitterAccount,
     publicKey: assertionKeyPair.publicKeyMultibase,
-    relationship: "assertionMethod",
-  }).submit();
+    relationship: 'assertionMethod',
+  }).submit()
 
-  if (vmTransactionResult.status !== "confirmed") {
-    throw new Error("add verification method failed");
+  if (vmTransactionResult.status !== 'confirmed') {
+    throw new Error('add verification method failed')
   }
 
-  ({ didDocument, signers } = vmTransactionResult.asConfirmed);
+  ;({ didDocument, signers } = vmTransactionResult.asConfirmed)
 
-  console.log("assertion method added");
-  return { didDocument, signers };
+  console.log('assertion method added')
+  return { didDocument, signers }
 }
