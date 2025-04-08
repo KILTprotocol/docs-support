@@ -2,6 +2,7 @@
   "name": "support-docs",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,9 +11,15 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@kiltprotocol/credentials": "^0.100.0",
     "@kiltprotocol/sdk-js": "^1.0.0",
     "dotenv": "^16.4.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
-  }
+  },
+  "devDependencies": {
+    "@kiltprotocol/types": "^0.100.0",
+    "@kiltprotocol/utils": "^0.100.0"
+  },
+  "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab"
 }
