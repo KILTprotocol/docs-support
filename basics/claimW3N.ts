@@ -3,14 +3,14 @@ import * as Kilt from '@kiltprotocol/sdk-js'
 import type {
   SignerInterface,
   DidDocument,
-  MultibaseKeyPair,
+  KiltAddress,
 } from '@kiltprotocol/types'
 
 export async function claimW3N(
   name: string,
   holderDid: DidDocument,
   signers: SignerInterface[],
-  submitterAccount: MultibaseKeyPair
+  submitter: SignerInterface<'Ed25519', KiltAddress>
 ): Promise<string[] | undefined> {
   const api = Kilt.ConfigService.get('api')
 
@@ -20,8 +20,8 @@ export async function claimW3N(
     api,
     call: claimName,
     didDocument: holderDid,
-    signers: [...signers, submitterAccount],
-    submitter: submitterAccount,
+    signers: [...signers, submitter],
+    submitter: submitter,
   }).submit()
 
   if (!transaction.asConfirmed) {

@@ -2,11 +2,11 @@ import * as Kilt from '@kiltprotocol/sdk-js'
 import type {
   SignerInterface,
   DidDocument,
-  MultibaseKeyPair,
+  KiltAddress,
 } from '@kiltprotocol/types'
 
 export async function verifyDid(
-  submitterAccount: MultibaseKeyPair,
+  submitter: SignerInterface<'Ed25519', KiltAddress>,
   didDocument: DidDocument,
   signers: SignerInterface[]
 ): Promise<{ didDocument: DidDocument; signers: SignerInterface[] }> {
@@ -20,7 +20,7 @@ export async function verifyDid(
     api,
     didDocument,
     signers: [...signers, assertionKeyPair],
-    submitter: submitterAccount,
+    submitter: submitter,
     publicKey: assertionKeyPair.publicKeyMultibase,
     relationship: 'assertionMethod',
   }).submit()

@@ -3,17 +3,18 @@ import type {
   SignerInterface,
   DidDocument,
   MultibaseKeyPair,
+  KiltAddress,
 } from '@kiltprotocol/types'
 
 export async function generateDid(
-  submitterAccount: MultibaseKeyPair,
-  authenticationKeyPair: any
+  submitter: SignerInterface<'Ed25519', KiltAddress>,
+  authenticationKeyPair: MultibaseKeyPair
 ): Promise<{ didDocument: DidDocument; signers: SignerInterface[] }> {
   const api = Kilt.ConfigService.get('api')
   const transactionHandler = Kilt.DidHelpers.createDid({
     api,
     signers: [authenticationKeyPair],
-    submitter: submitterAccount,
+    submitter: submitter,
     fromPublicKey: authenticationKeyPair.publicKeyMultibase,
   })
 

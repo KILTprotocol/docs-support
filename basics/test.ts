@@ -1,8 +1,8 @@
 import * as Kilt from '@kiltprotocol/sdk-js'
-import { Keyring } from '@kiltprotocol/utils'
 import { verifyDid } from './addVerification2Did.ts'
 import { generateAccounts } from './generateAccount.ts'
 import { generateDid } from './generateDid.ts'
+import { Balances, KiltAddress, SignerInterface } from '@kiltprotocol/types'
 import { issueCredential } from './issueCredential.ts'
 import { claimW3N } from './claimW3N.ts'
 
@@ -11,43 +11,41 @@ async function runAll(): Promise<void> {
 
   console.log('connected')
 
-  const faucetAccount = Kilt.generateKeypair({
-    type: 'ed25519',
-    seed: '0xe566520fec3ca23d80dfe9e9529ada463b93fc33f17219c1089de906f7253f1c',
-  })
+  const faucet = {
+    publicKey: new Uint8Array([
+      238, 93, 102, 137, 215, 142, 38, 187, 91, 53, 176, 68, 23, 64, 160, 101,
+      199, 189, 142, 253, 209, 193, 84, 34, 7, 92, 63, 43, 32, 33, 181, 210,
+    ]),
+    secretKey: new Uint8Array([
+      205, 253, 96, 36, 210, 176, 235, 162, 125, 84, 204, 146, 164, 76, 217,
+      166, 39, 198, 155, 45, 189, 161, 94, 215, 229, 128, 133, 66, 81, 25, 174,
+      3,
+    ]),
+  }
 
-  // Yeni bir Keyring örneği oluştur
-  const keyring = new Keyring({ type: 'ed25519' })
+  const [submitter] = (await Kilt.getSignersForKeypair({
+    keypair: faucet,
+    type: 'Ed25519',
+  })) as Array<SignerInterface<'Ed25519', KiltAddress>>
 
-  // Seed'den KeyringPair oluştur
-  const keyringPair = keyring.addFromSeed(
-    Buffer.from(
-      'e566520fec3ca23d80dfe9e9529ada463b93fc33f17219c1089de906f7253f1c',
-      'hex'
-    )
-  )
-
-  let { issuerAccount, submitterAccount, holderAccount, verifierAccount } =
-    generateAccounts()
+  const balance = await api.query.system.account(submitter.id)
+  console.log('balance', balance.toHuman())
+  let { holderAccount, issuerAccount } = generateAccounts()
   console.log('Successfully transferred tokens')
-  submitterAccount = faucetAccount
-  let holderDid = await generateDid(faucetAccount, holderAccount)
 
-  const claimName = await claimW3N(
-    'testnamebadboybadboybad',
+  let holderDid = await generateDid(submitter, holderAccount)
+
+  await claimW3N(
+    'testname1982123181',
     holderDid.didDocument,
     holderDid.signers,
-    submitterAccount
+    submitter
   )
 
-  console.log('Web3 Name Claim', claimName)
-
-  let issuerDid = await generateDid(faucetAccount, issuerAccount)
-
-  //let verifierDid = await generateVerifierDid(faucetAccount, verifierAccount)
+  let issuerDid = await generateDid(submitter, issuerAccount)
 
   issuerDid = await verifyDid(
-    submitterAccount,
+    submitter,
     issuerDid.didDocument,
     issuerDid.signers
   )
@@ -56,7 +54,7 @@ async function runAll(): Promise<void> {
     issuerDid.didDocument,
     holderDid.didDocument,
     issuerDid.signers,
-    submitterAccount
+    submitter
   )
 
   console.log('Credential', credential)
