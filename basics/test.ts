@@ -6,6 +6,7 @@ import { Balances, KiltAddress, SignerInterface } from '@kiltprotocol/types'
 import { issueCredential } from './issueCredential.ts'
 import { claimW3N } from './claimW3N.ts'
 import { releaseW3N } from './releaseW3N.ts'
+import { didResolve } from './didResolve.ts'
 
 async function runAll(): Promise<void> {
   let api = await Kilt.connect('wss://peregrine.kilt.io/')
@@ -35,6 +36,7 @@ async function runAll(): Promise<void> {
   await releaseW3N(holderDid.didDocument, holderDid.signers, submitter)
 
   let issuerDid = await generateDid(submitter, issuerAccount)
+  await didResolve(issuerDid.didDocument.id)
 
   issuerDid = await verifyDid(
     issuerDid.didDocument,
