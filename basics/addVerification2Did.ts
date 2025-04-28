@@ -6,9 +6,9 @@ import type {
 } from '@kiltprotocol/types'
 
 export async function verifyDid(
-  submitter: SignerInterface<'Ed25519', KiltAddress>,
   didDocument: DidDocument,
-  signers: SignerInterface[]
+  signers: SignerInterface[],
+  submitter: SignerInterface<'Ed25519', KiltAddress>
 ): Promise<{ didDocument: DidDocument; signers: SignerInterface[] }> {
   const api = Kilt.ConfigService.get('api')
 
