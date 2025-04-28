@@ -6,6 +6,7 @@ import { Balances, KiltAddress, SignerInterface } from '@kiltprotocol/types'
 import { issueCredential } from './issueCredential.ts'
 import { claimW3N } from './claimW3N.ts'
 import { releaseW3N } from './releaseW3N.ts'
+import { deleteDid } from '../advance/deleteDid.ts'
 
 async function runAll(): Promise<void> {
   let api = await Kilt.connect('wss://peregrine.kilt.io/')
@@ -28,8 +29,11 @@ async function runAll(): Promise<void> {
   console.log('Successfully transferred tokens')
 
   let holderDid = await generateDid(submitter, holderAccount)
+  
   const name = `testname${Math.floor(Math.random() * 10000)}`
+
   console.log('name', name)
+
   await claimW3N(name, holderDid.didDocument, holderDid.signers, submitter)
 
   await releaseW3N(holderDid.didDocument, holderDid.signers, submitter)
@@ -50,6 +54,10 @@ async function runAll(): Promise<void> {
   )
 
   console.log('Credential', credential)
+
+  await deleteDid(issuerDid.didDocument, issuerDid.signers, submitter)
+
+  await deleteDid(holderDid.didDocument, holderDid.signers, submitter)
 
   await api.disconnect()
   console.log('disconnected')
