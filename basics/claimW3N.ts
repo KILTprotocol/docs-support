@@ -25,7 +25,8 @@ export async function claimW3N(
   }).submit()
 
   if (!transaction.asConfirmed) {
-    return undefined
+    console.log(transaction.status)
+    throw new Error('claim W3N failed')
   }
 
   console.log(
