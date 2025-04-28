@@ -1,52 +1,68 @@
-import * as Kilt from "@kiltprotocol/sdk-js";
-import { Keyring } from "@kiltprotocol/utils";
-import { verifyDid } from "./addVerification2Did";
-import { generateAccounts } from "./generateAccount";
-import { generateDid } from "./generateDid";
-import { issueCredential } from "./issueCredential";
+import * as Kilt from '@kiltprotocol/sdk-js'
+import { verifyDid } from './addVerification2Did.ts'
+import { generateAccounts } from './generateAccount.ts'
+import { generateDid } from './generateDid.ts'
+import { Balances, KiltAddress, SignerInterface } from '@kiltprotocol/types'
+import { issueCredential } from './issueCredential.ts'
+import { claimW3N } from './claimW3N.ts'
+import { releaseW3N } from './releaseW3N.ts'
 
 async function runAll(): Promise<void> {
-  let api = await Kilt.connect("wss://peregrine.kilt.io/");
+  let api = await Kilt.connect('wss://peregrine.kilt.io/')
 
-  console.log("connected");
+  console.log('connected')
 
-  const faucetAccount = Kilt.generateKeypair({
-    type: "ed25519",
-    seed: "0xe566520fec3ca23d80dfe9e9529ada463b93fc33f17219c1089de906f7253f1c",
-  });
+  const faucetMnemonic =
+    'receive clutch item involve chaos clutch furnace arrest claw isolate okay together'
 
-  // Yeni bir Keyring örneği oluştur
-  const keyring = new Keyring({ type: "ed25519" });
+  const faucet = Kilt.generateKeypair({ seed: faucetMnemonic })
 
-  // Seed'den KeyringPair oluştur
-  const keyringPair = keyring.addFromSeed(
-    Buffer.from(
-      "e566520fec3ca23d80dfe9e9529ada463b93fc33f17219c1089de906f7253f1c",
-      "hex"
-    )
-  );
+  const [submitter] = (await Kilt.getSignersForKeypair({
+    keypair: faucet,
+    type: 'Ed25519',
+  })) as Array<SignerInterface<'Ed25519', KiltAddress>>
 
-  let { issuerAccount, submitterAccount, holderAccount, verifierAccount } =
-    generateAccounts();
-  console.log("Successfully transferred tokens");
-  submitterAccount = faucetAccount;
-  let issuerDid = await generateDid(faucetAccount, issuerAccount);
-  let holderDid = await generateDid(faucetAccount, holderAccount);
-  //let verifierDid = await generateVerifierDid(faucetAccount, verifierAccount)
+  const balance = await api.query.system.account(submitter.id)
+  console.log('balance', balance.toHuman())
+  let { holderAccount, issuerAccount } = generateAccounts()
+  console.log('Successfully transferred tokens')
+
+  let holderDid = await generateDid(submitter, holderAccount)
+  const name = `testname${Math.floor(Math.random() * 10000)}`
+  console.log('name', name)
+  await claimW3N(name, holderDid.didDocument, holderDid.signers, submitter)
+
+  await releaseW3N(holderDid.didDocument, holderDid.signers, submitter)
+
+  let issuerDid = await generateDid(submitter, issuerAccount)
 
   issuerDid = await verifyDid(
-    submitterAccount,
     issuerDid.didDocument,
-    issuerDid.signers
-  );
+    issuerDid.signers,
+    submitter
+  )
 
   const credential = await issueCredential(
     issuerDid.didDocument,
     holderDid.didDocument,
     issuerDid.signers,
-    submitterAccount
-  );
+    submitter
+  )
 
-  await api.disconnect();
-  console.log("disconnected");
+  console.log('Credential', credential)
+
+  await api.disconnect()
+  console.log('disconnected')
 }
+
+runAll()
+  .then(() => {
+    console.log('All done')
+  })
+  .catch((error) => {
+    console.error('Error:', error)
+  })
+  .finally(() => {
+    console.log('Finally')
+    process.exit()
+  })
