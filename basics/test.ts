@@ -6,6 +6,7 @@ import { Balances, KiltAddress, SignerInterface } from '@kiltprotocol/types'
 import { issueCredential } from './issueCredential.ts'
 import { claimW3N } from './claimW3N.ts'
 import { releaseW3N } from './releaseW3N.ts'
+import { createCredentialPresentation, derivedProof } from './holder.ts'
 
 async function runAll(): Promise<void> {
   let api = await Kilt.connect('wss://peregrine.kilt.io/')
@@ -50,6 +51,14 @@ async function runAll(): Promise<void> {
   )
 
   console.log('Credential', credential)
+
+  await derivedProof(credential)
+
+  await createCredentialPresentation(
+    [credential],
+    holderDid.didDocument,
+    holderDid.signers
+  )
 
   await api.disconnect()
   console.log('disconnected')
