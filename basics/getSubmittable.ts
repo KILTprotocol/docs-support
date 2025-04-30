@@ -42,7 +42,9 @@ export async function handleSubmittable(
     submitter
   )
 
-  console.log(result.isCompleted)
+  if (result.isError) {
+    throw new Error('Transaction failed')
+  }
 
   console.log(result.toHuman())
 }
