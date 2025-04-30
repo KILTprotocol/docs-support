@@ -6,6 +6,10 @@ import { Balances, KiltAddress, SignerInterface } from '@kiltprotocol/types'
 import { issueCredential } from './issueCredential.ts'
 import { claimW3N } from './claimW3N.ts'
 import { releaseW3N } from './releaseW3N.ts'
+import {
+  addServiceEndpoints,
+  removeServiceEndpoints,
+} from './serviceEndpoints.ts'
 
 async function runAll(): Promise<void> {
   let api = await Kilt.connect('wss://peregrine.kilt.io/')
@@ -50,7 +54,12 @@ async function runAll(): Promise<void> {
   )
 
   console.log('Credential', credential)
-
+  await addServiceEndpoints(holderDid.didDocument, holderDid.signers, submitter)
+  await removeServiceEndpoints(
+    holderDid.didDocument,
+    holderDid.signers,
+    submitter
+  )
   await api.disconnect()
   console.log('disconnected')
 }
