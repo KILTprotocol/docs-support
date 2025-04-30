@@ -5,19 +5,23 @@ export async function didResolve(did: Did): Promise<DidDocument | null> {
   const { didResolutionMetadata, didDocument, didDocumentMetadata } =
     await DidResolver.resolve(did)
   if (didDocumentMetadata.deactivated) {
-    console.log(`DID ${did} Document is deactivated`)
-    return null
+    throw new Error(`DID Document is deactivated for ${did}`)
   }
+  
   if (didResolutionMetadata.error) {
-    console.log('Error resolving DID:', didResolutionMetadata.error)
-    return null
+    throw new Error(
+      `DID Resolution error: ${didResolutionMetadata.error} for ${did}`
+    )
   }
-  if (!didDocument) {
-    console.log('No DID Document found')
-    return null
-  }
+
   if (didDocumentMetadata) {
     console.log('DID Document Metadata:', didDocumentMetadata)
+  }
+
+  if (!didDocument) {
+    throw new Error(
+      `DID Document not found for ${did} a violation of the DID Resolver API`
+    )
   }
 
   console.log('DID Document:', didDocument)

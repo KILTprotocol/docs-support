@@ -36,6 +36,7 @@ async function runAll(): Promise<void> {
   await releaseW3N(holderDid.didDocument, holderDid.signers, submitter)
 
   let issuerDid = await generateDid(submitter, issuerAccount)
+  
   await didResolve(issuerDid.didDocument.id)
 
   issuerDid = await verifyDid(
