@@ -16,6 +16,6 @@ export async function queryW3N(): Promise<void> {
   // Checks if the name is registered and returns the owner
   // the owner includes the DID and block which the owner claimed the web3name
   // returns also the deposit owner of the web3name can be different from the owner.
-  const web3name = await api.query.web3Names.owner(alice)
-  console.log(`DID Owner of given web3name: ${alice}`, web3name.toHuman())
+  const did = await api.query.web3Names.owner(alice)
+  console.log(`DID Owner of given web3name: ${alice}`, did.toHuman())
 }
