@@ -7,8 +7,8 @@ import type {
 } from '@kiltprotocol/types'
 
 export async function generateDid(
-  submitter: SignerInterface<'Ed25519', KiltAddress>,
-  authenticationKeyPair: MultibaseKeyPair
+  authenticationKeyPair: MultibaseKeyPair,
+  submitter: SignerInterface<'Ed25519', KiltAddress>
 ): Promise<{ didDocument: DidDocument; signers: SignerInterface[] }> {
   const api = Kilt.ConfigService.get('api')
   const transactionHandler = Kilt.DidHelpers.createDid({
