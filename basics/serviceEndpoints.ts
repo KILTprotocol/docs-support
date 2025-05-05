@@ -13,22 +13,20 @@ export async function addServiceEndpoints(
   const transactionHandler = DidHelpers.addService({
     api,
     didDocument,
-    signers: signers,
-    submitter: submitter,
+    signers,
+    submitter,
     service: {
       id: serviceId,
       type: ['example-type'],
       serviceEndpoint: ['https://example.com/endpoint'],
     },
-  })
-
-  const result = await transactionHandler.submit()
+  }).submit()
 
   // Check if the result is rejected or confirmed
-  if (result.asRejected) {
+  if (result.isRejected) {
     throw new Error(`Service added failed: ${result.asRejected.error}`)
   }
-  if (result.asConfirmed) {
+  if (result.isConfirmed) {
     console.log('Service added successfully')
   }
 }
@@ -46,9 +44,7 @@ export async function removeServiceEndpoints(
     signers: signers,
     submitter: submitter,
     id: serviceId,
-  })
-
-  const result = await transactionHandler.submit()
+  }).submit()
   // Check if the result is rejected or confirmed
   if (result.asRejected) {
     throw new Error(`Service removal failed: ${result.asRejected.error}`)
