@@ -10,9 +10,9 @@ export async function deleteDid(
 
   const transactionHandler = DidHelpers.deactivateDid({
     api,
-    signers: [...signers],
+    signers,
     submitter,
-    didDocument: didDocument,
+    didDocument,
   })
 
   const result = await transactionHandler.submit()
