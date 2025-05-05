@@ -30,13 +30,11 @@ export async function verifyCredential(
       credential,
     })
 
-  if (error) {
-    throw new Error(`Error verifying credential: ${error}`)
-  }
   if (verified) {
     console.log('Credential is verified')
-  } else {
-    console.log('Credential is not verified')
+  }
+  if (!verified) {
+    throw new Error(`Error verifying credential: ${error}`)
   }
 
   if (!statusResult) {
@@ -45,10 +43,6 @@ export async function verifyCredential(
   }
   if (proofResults) {
     console.log('Proof results:', proofResults)
-  }
-  if (statusResult.error) {
-    console.log('Error verifying credential:', statusResult.error)
-    return
   }
 }
 
@@ -61,13 +55,11 @@ export async function verifyPresentation(
       presentation,
     })
 
-  if (error) {
-    throw new Error(`Error verifying presentation: ${error}`)
-  }
   if (verified) {
     console.log('Presentation is verified')
-  } else {
-    console.log('Presentation is not verified')
+  }
+  if (!verified) {
+    throw new Error(`Error verifying presentation: ${error}`)
   }
   if (!credentialResults) {
     console.log('No credential results returned')
