@@ -13,21 +13,21 @@ export async function issueCredential(
   signers: SignerInterface[],
   submitter: SignerInterface<'Ed25519', KiltAddress>
 ): Promise<Types.VerifiableCredential> {
-  const passportCType = await CType.fetchFromChain(
+  const usernameCType = await CType.fetchFromChain(
     'kilt:ctype:0x05f099b888ddf3e8ef4fc690f12ca59d967bf934d58dda723921893cff0d8734'
   )
 
-  const passportCredential = await Kilt.Issuer.createCredential({
+  const usernameCredential = await Kilt.Issuer.createCredential({
     issuer: issuerDid.id,
     credentialSubject: {
       id: holderDid.id,
-      Username: 'Aybars',
+      Username: 'Testname',
     },
-    cType: passportCType.cType,
+    cType: usernameCType.cType,
   })
 
   const credential = await Kilt.Issuer.issue({
-    credential: passportCredential,
+    credential: usernameCredential,
     issuer: {
       didDocument: issuerDid,
       signers: [...signers, submitter],

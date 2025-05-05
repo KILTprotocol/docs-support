@@ -6,6 +6,7 @@ import { KiltAddress, SignerInterface } from '@kiltprotocol/types'
 import { issueCredential } from './issueCredential.ts'
 import { claimW3N } from './claimW3N.ts'
 import { releaseW3N } from './releaseW3N.ts'
+import { createCredentialPresentation, derivedProof } from './holder.ts'
 import { getSubmittable, handleSubmittable } from './getSubmittable.ts'
 
 async function runAll(): Promise<void> {
@@ -53,6 +54,14 @@ async function runAll(): Promise<void> {
   )
 
   console.log('Credential', credential)
+
+  await derivedProof(credential)
+
+  await createCredentialPresentation(
+    [credential],
+    holderDid.didDocument,
+    holderDid.signers
+  )
 
   const submittableHex = await getSubmittable(
     getSubmittableAccount,
