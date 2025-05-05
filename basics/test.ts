@@ -66,20 +66,24 @@ async function runAll(): Promise<void> {
   await verifyCredential(credential)
   await checkStatus(credential)
 
-  await deleteDid(issuerDid.didDocument, issuerDid.signers, submitter)
-
-  await deleteDid(holderDid.didDocument, holderDid.signers, submitter)
-
-  await derivedProof(credential)
-
-  const presentation = await createCredentialPresentation(
+  const { presentation, challenge } = await createCredentialPresentation(
     [credential],
     holderDid.didDocument,
-    holderDid.signers
+    holderDid.signers,
+    issuerDid.didDocument
   )
   console.log('Presentation', presentation)
 
-  await verifyPresentation(presentation)
+  await verifyPresentation({
+    presentation,
+    challenge,
+    issuerDid: issuerDid.didDocument,
+  })
+  await derivedProof(credential)
+
+  await deleteDid(issuerDid.didDocument, issuerDid.signers, submitter)
+
+  await deleteDid(holderDid.didDocument, holderDid.signers, submitter)
 
   const submittableHex = await getSubmittable(
     getSubmittableAccount,

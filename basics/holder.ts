@@ -7,8 +7,9 @@ import { Types } from '@kiltprotocol/credentials'
 export async function createCredentialPresentation(
   credential: Types.VerifiableCredential[],
   holderDid: DidDocument,
-  signers: SignerInterface[]
-): Promise<Types.VerifiablePresentation> {
+  signers: SignerInterface[],
+  issuerDid: DidDocument
+): Promise<{ presentation: Types.VerifiablePresentation; challenge: string }> {
   // Create a presentation
   const challenge = randomAsHex()
 
@@ -18,12 +19,12 @@ export async function createCredentialPresentation(
     presentationOptions: {
       validFrom: new Date(),
       validUntil: new Date(Date.now() + 1000 * 60 * 60 * 24),
-      verifier: 'did:kilt:4s7XuQtwCfqtL2My9NKYXb6E8BvHqbdWooXocgwvhsYJjMgR',
+      verifier: issuerDid.id,
     },
     proofOptions: { challenge },
   })
 
-  return presentation
+  return { presentation, challenge }
 }
 
 export async function derivedProof(

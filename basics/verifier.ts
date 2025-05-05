@@ -1,5 +1,6 @@
 import { Types } from '@kiltprotocol/credentials'
 import { Verifier } from '@kiltprotocol/sdk-js'
+import { DidDocument } from '@kiltprotocol/types'
 
 export async function checkStatus(
   credential: Types.VerifiableCredential
@@ -46,13 +47,23 @@ export async function verifyCredential(
   }
 }
 
-export async function verifyPresentation(
+export async function verifyPresentation({
+  presentation,
+  challenge,
+  issuerDid,
+}: {
   presentation: Types.VerifiablePresentation
-): Promise<void> {
+  challenge: string
+  issuerDid: DidDocument
+}): Promise<void> {
   // Verify the presentation
   const { proofResults, credentialResults, verified, error } =
     await Verifier.verifyPresentation({
       presentation,
+      verificationCriteria: {
+        challenge,
+        verifier: issuerDid.id,
+      },
     })
 
   if (verified) {

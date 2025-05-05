@@ -35,8 +35,6 @@ export async function handleSubmittable(
 ): Promise<void> {
   const api = ConfigService.get('api')
 
-  console.log(submittableHex)
-
   const result = await Blockchain.signAndSubmitTx(
     api.tx(submittableHex),
     submitter
