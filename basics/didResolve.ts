@@ -20,7 +20,7 @@ export async function didResolve(did: Did): Promise<DidDocument | null> {
 
   if (!didDocument) {
     throw new Error(
-      `DID Document not found for ${did} a violation of the DID Resolver API`
+      `DID Document missing when resolving ${did} in violation of the DID Resolver API`
     )
   }
 
