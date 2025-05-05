@@ -9,8 +9,7 @@ export async function checkStatus(
     credential,
   })
   if (error) {
-    console.log('Error checking status:', error)
-    return false
+    throw new Error(`Error checking status: ${error}`)
   }
 
   if (verified) {
@@ -26,9 +25,19 @@ export async function verifyCredential(
   credential: Types.VerifiableCredential
 ): Promise<void> {
   // Verify the credential
-  const { statusResult, proofResults } = await Verifier.verifyCredential({
-    credential,
-  })
+  const { statusResult, proofResults, verified, error } =
+    await Verifier.verifyCredential({
+      credential,
+    })
+
+  if (error) {
+    throw new Error(`Error verifying credential: ${error}`)
+  }
+  if (verified) {
+    console.log('Credential is verified')
+  } else {
+    console.log('Credential is not verified')
+  }
 
   if (!statusResult) {
     console.log('No status result returned')
@@ -47,18 +56,22 @@ export async function verifyPresentation(
   presentation: Types.VerifiablePresentation
 ): Promise<void> {
   // Verify the presentation
-  const { proofResults, credentialResults } = await Verifier.verifyPresentation(
-    {
+  const { proofResults, credentialResults, verified, error } =
+    await Verifier.verifyPresentation({
       presentation,
-    }
-  )
+    })
+
+  if (error) {
+    throw new Error(`Error verifying presentation: ${error}`)
+  }
+  if (verified) {
+    console.log('Presentation is verified')
+  } else {
+    console.log('Presentation is not verified')
+  }
   if (!credentialResults) {
     console.log('No credential results returned')
     return
-  }
-  if (credentialResults[0].verified) {
-    console.log('Presentation is verified')
-    console.log(credentialResults[0].credential)
   }
   if (proofResults) {
     console.log('Proof results:', proofResults)
