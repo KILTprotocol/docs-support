@@ -1,0 +1,46 @@
+name: CI Build and Start Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build the project
+        run: pnpm run build
+
+      - name: Start the project and check for errors
+        run: |
+          pnpm start || exit 1
+
+  create-ticket:
+    needs: build-and-check
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create support ticket
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Error detected during CI"
+          content-filepath: error.log
