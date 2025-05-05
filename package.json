@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@kiltprotocol/chain-helpers": "^0.100.0",
     "@kiltprotocol/credentials": "^0.100.0",
     "@kiltprotocol/sdk-js": "^1.0.0",
     "dotenv": "^16.4.7",
