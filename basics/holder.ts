@@ -8,7 +8,8 @@ export async function createCredentialPresentation(
   credential: Types.VerifiableCredential[],
   holderDid: DidDocument,
   signers: SignerInterface[]
-): Promise<void> {
+): Promise<Types.VerifiablePresentation> {
+  // Create a presentation
   const challenge = randomAsHex()
 
   const presentation = await Holder.createPresentation({
@@ -22,7 +23,7 @@ export async function createCredentialPresentation(
     proofOptions: { challenge },
   })
 
-  console.log('presentation', presentation)
+  return presentation
 }
 
 export async function derivedProof(
