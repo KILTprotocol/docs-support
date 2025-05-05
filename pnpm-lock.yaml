@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@kiltprotocol/chain-helpers':
+        specifier: ^0.100.0
+        version: 0.100.0(@kiltprotocol/augment-api@1.11405.1(@kiltprotocol/type-definitions@1.11502.0(@polkadot/types@12.4.2))(@polkadot/api@12.4.2)(@polkadot/types@12.4.2)(typescript@5.8.3))(@kiltprotocol/type-definitions@1.11502.0(@polkadot/types@12.4.2))(@polkadot/api-derive@12.4.2)(@polkadot/api@12.4.2)(@polkadot/keyring@13.4.3(@polkadot/util-crypto@13.4.3(@polkadot/util@13.4.3))(@polkadot/util@13.4.3))(@polkadot/types@12.4.2)(@polkadot/util-crypto@13.4.3(@polkadot/util@13.4.3))(@polkadot/util@13.4.3)
       '@kiltprotocol/credentials':
         specifier: ^0.100.0
         version: 0.100.0(@kiltprotocol/augment-api@1.11405.1(@kiltprotocol/type-definitions@1.11502.0(@polkadot/types@12.4.2))(@polkadot/api@12.4.2)(@polkadot/types@12.4.2)(typescript@5.8.3))(@kiltprotocol/type-definitions@1.11502.0(@polkadot/types@12.4.2))(@polkadot/api-derive@12.4.2)(@polkadot/api@12.4.2)(@polkadot/keyring@13.4.3(@polkadot/util-crypto@13.4.3(@polkadot/util@13.4.3))(@polkadot/util@13.4.3))(@polkadot/types@12.4.2)(@polkadot/util-crypto@13.4.3(@polkadot/util@13.4.3))(@polkadot/util@13.4.3)

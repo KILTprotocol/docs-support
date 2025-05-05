@@ -2,11 +2,12 @@ import * as Kilt from '@kiltprotocol/sdk-js'
 import { verifyDid } from './addVerification2Did.ts'
 import { generateAccounts } from './generateAccount.ts'
 import { generateDid } from './generateDid.ts'
-import { Balances, KiltAddress, SignerInterface } from '@kiltprotocol/types'
+import { KiltAddress, SignerInterface } from '@kiltprotocol/types'
 import { issueCredential } from './issueCredential.ts'
 import { claimW3N } from './claimW3N.ts'
 import { releaseW3N } from './releaseW3N.ts'
 import { deleteDid } from '../advance/deleteDid.ts'
+import { getSubmittable, handleSubmittable } from './getSubmittable.ts'
 
 async function runAll(): Promise<void> {
   let api = await Kilt.connect('wss://peregrine.kilt.io/')
@@ -22,14 +23,15 @@ async function runAll(): Promise<void> {
     keypair: faucet,
     type: 'Ed25519',
   })) as Array<SignerInterface<'Ed25519', KiltAddress>>
+  console.log('submitter address', submitter.id)
 
   const balance = await api.query.system.account(submitter.id)
   console.log('balance', balance.toHuman())
-  let { holderAccount, issuerAccount } = generateAccounts()
+  let { holderAccount, issuerAccount, getSubmittableAccount } =
+    generateAccounts()
   console.log('Successfully transferred tokens')
 
-  let holderDid = await generateDid(submitter, holderAccount)
-  
+  let holderDid = await generateDid(holderAccount, submitter)
   const name = `testname${Math.floor(Math.random() * 10000)}`
 
   console.log('name', name)
@@ -38,7 +40,7 @@ async function runAll(): Promise<void> {
 
   await releaseW3N(holderDid.didDocument, holderDid.signers, submitter)
 
-  let issuerDid = await generateDid(submitter, issuerAccount)
+  let issuerDid = await generateDid(issuerAccount, submitter)
 
   issuerDid = await verifyDid(
     issuerDid.didDocument,
@@ -58,6 +60,14 @@ async function runAll(): Promise<void> {
   await deleteDid(issuerDid.didDocument, issuerDid.signers, submitter)
 
   await deleteDid(holderDid.didDocument, holderDid.signers, submitter)
+
+  const submittableHex = await getSubmittable(
+    getSubmittableAccount,
+    submitter.id
+  )
+
+  await handleSubmittable(submittableHex, submitter)
+  console.log('Submittable handled')
 
   await api.disconnect()
   console.log('disconnected')
