@@ -20,7 +20,6 @@ export async function createCredentialPresentation(
       verifier: 'did:kilt:4s7XuQtwCfqtL2My9NKYXb6E8BvHqbdWooXocgwvhsYJjMgR',
     },
     proofOptions: { challenge },
-    now: new Date(),
   })
 
   console.log('presentation', presentation)
