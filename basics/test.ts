@@ -6,6 +6,7 @@ import { KiltAddress, SignerInterface } from '@kiltprotocol/types'
 import { issueCredential } from './issueCredential.ts'
 import { claimW3N } from './claimW3N.ts'
 import { releaseW3N } from './releaseW3N.ts'
+import { didResolve } from './didResolve.ts'
 import { deleteDid } from '../advance/deleteDid.ts'
 import { createCredentialPresentation, derivedProof } from './holder.ts'
 import { getSubmittable, handleSubmittable } from './getSubmittable.ts'
@@ -43,6 +44,8 @@ async function runAll(): Promise<void> {
 
   let issuerDid = await generateDid(issuerAccount, submitter)
 
+  await didResolve(issuerDid.didDocument.id)
+
   issuerDid = await verifyDid(
     issuerDid.didDocument,
     issuerDid.signers,
@@ -58,7 +61,6 @@ async function runAll(): Promise<void> {
 
   console.log('Credential', credential)
 
-
   await deleteDid(issuerDid.didDocument, issuerDid.signers, submitter)
 
   await deleteDid(holderDid.didDocument, holderDid.signers, submitter)
@@ -70,7 +72,6 @@ async function runAll(): Promise<void> {
     holderDid.didDocument,
     holderDid.signers
   )
-
 
   const submittableHex = await getSubmittable(
     getSubmittableAccount,
