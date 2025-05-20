@@ -11,6 +11,7 @@ import {
   verifyCredential,
   verifyPresentation,
 } from './verifier.ts'
+import { didResolve } from './didResolve.ts'
 import { deleteDid } from '../advance/deleteDid.ts'
 import { createCredentialPresentation, derivedProof } from './holder.ts'
 import { getSubmittable, handleSubmittable } from './getSubmittable.ts'
@@ -48,6 +49,8 @@ async function runAll(): Promise<void> {
 
   let issuerDid = await generateDid(issuerAccount, submitter)
 
+  await didResolve(issuerDid.didDocument.id)
+
   issuerDid = await verifyDid(
     issuerDid.didDocument,
     issuerDid.signers,
@@ -81,10 +84,6 @@ async function runAll(): Promise<void> {
   })
   await derivedProof(credential)
 
-  await deleteDid(issuerDid.didDocument, issuerDid.signers, submitter)
-
-  await deleteDid(holderDid.didDocument, holderDid.signers, submitter)
-
   const submittableHex = await getSubmittable(
     getSubmittableAccount,
     submitter.id
@@ -92,6 +91,10 @@ async function runAll(): Promise<void> {
 
   await handleSubmittable(submittableHex, submitter)
   console.log('Submittable handled')
+
+  await deleteDid(issuerDid.didDocument, issuerDid.signers, submitter)
+
+  await deleteDid(holderDid.didDocument, holderDid.signers, submitter)
 
   await api.disconnect()
   console.log('disconnected')
