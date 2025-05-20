@@ -21,7 +21,6 @@ export async function deleteDid(
     return
   } else if (result.status === 'confirmed') {
     console.log('Did deleted successfully')
-    console.log('Transaction hash:', result.asConfirmed)
     return
   }
 }

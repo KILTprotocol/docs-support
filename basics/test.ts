@@ -6,6 +6,11 @@ import { KiltAddress, SignerInterface } from '@kiltprotocol/types'
 import { issueCredential } from './issueCredential.ts'
 import { claimW3N } from './claimW3N.ts'
 import { releaseW3N } from './releaseW3N.ts'
+import {
+  checkStatus,
+  verifyCredential,
+  verifyPresentation,
+} from './verifier.ts'
 import { didResolve } from './didResolve.ts'
 import { deleteDid } from '../advance/deleteDid.ts'
 import { createCredentialPresentation, derivedProof } from './holder.ts'
@@ -61,17 +66,23 @@ async function runAll(): Promise<void> {
 
   console.log('Credential', credential)
 
-  await deleteDid(issuerDid.didDocument, issuerDid.signers, submitter)
+  await verifyCredential(credential)
+  await checkStatus(credential)
 
-  await deleteDid(holderDid.didDocument, holderDid.signers, submitter)
-
-  await derivedProof(credential)
-
-  await createCredentialPresentation(
+  const { presentation, challenge } = await createCredentialPresentation(
     [credential],
     holderDid.didDocument,
-    holderDid.signers
+    holderDid.signers,
+    issuerDid.didDocument
   )
+  console.log('Presentation', presentation)
+
+  await verifyPresentation({
+    presentation,
+    challenge,
+    issuerDid: issuerDid.didDocument,
+  })
+  await derivedProof(credential)
 
   const submittableHex = await getSubmittable(
     getSubmittableAccount,
@@ -80,6 +91,10 @@ async function runAll(): Promise<void> {
 
   await handleSubmittable(submittableHex, submitter)
   console.log('Submittable handled')
+
+  await deleteDid(issuerDid.didDocument, issuerDid.signers, submitter)
+
+  await deleteDid(holderDid.didDocument, holderDid.signers, submitter)
 
   await api.disconnect()
   console.log('disconnected')
