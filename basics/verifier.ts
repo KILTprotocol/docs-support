@@ -68,8 +68,7 @@ export async function verifyPresentation({
 
   if (verified) {
     console.log('Presentation is verified')
-  }
-  if (!verified) {
+  } else {
     throw new Error(`Error verifying presentation: ${error}`)
   }
   if (!credentialResults) {
