@@ -33,8 +33,7 @@ export async function verifyCredential(
 
   if (verified) {
     console.log('Credential is verified')
-  }
-  if (!verified) {
+  } else {
     throw new Error(`Error verifying credential: ${error}`)
   }
 
